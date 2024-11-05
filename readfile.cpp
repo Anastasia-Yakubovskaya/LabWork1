@@ -1,98 +1,99 @@
-
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <cstdint> // Включаем для использования uint8_t
-
+#include <cstdint>
 #pragma pack(push, 1)
-
 struct BMPHeader {
-    uint16_t bfType;      // Тип файла (должен быть "BM")
-    uint32_t bfSize;      // Размер файла в байтах
-    uint16_t bfReserved1; // Зарезервировано (обычно 0)
-    uint16_t bfReserved2; // Зарезервировано (обычно 0)
-    uint32_t bfOffBits;   // Смещение до данных пикселей
+    uint16_t bfType;    
+    uint32_t bfSize;     
+    uint16_t bfReserved1; 
+    uint16_t bfReserved2; 
+    uint32_t bfOffBits;  
 };
-
 struct BMPInfoHeader {
-    uint32_t biSize;          // Размер этого заголовка
-    int32_t  biWidth;         // Ширина изображения
-    int32_t  biHeight;        // Высота изображения
-    uint16_t biPlanes;        // Количество цветовых плоскостей
-    uint16_t biBitCount;      // Количество бит на пиксель
-    uint32_t biCompression;    // Методы сжатия
-    uint32_t biSizeImage;     // Размер данных изображения
-    int32_t  biXPelsPerMeter;  // Горизонтальное разрешение
-    int32_t  biYPelsPerMeter;  // Вертикальное разрешение
-    uint32_t biClrUsed;       // Количество используемых цветов
-    uint32_t biClrImportant;   // Количество важных цветов
+    uint32_t biSize;       
+    int32_t  biWidth;        
+    int32_t  biHeight;       
+    uint16_t biPlanes;      
+    uint16_t biBitCount;      
+    uint32_t biCompression;    
+    uint32_t biSizeImage;     
+    int32_t  biXPelsPerMeter; 
+    int32_t  biYPelsPerMeter; 
+    uint32_t biClrUsed;      
+    uint32_t biClrImportant;   
 };
-
 #pragma pack(pop)
-
 void readBMP(const std::string& filePath, BMPHeader& bmpHeader, BMPInfoHeader& bmpInfoHeader, std::vector<uint8_t>& pixels) {
     std::ifstream file(filePath, std::ios::binary);
-    if (!file) {
-        std::cerr << "Error opening file: " << filePath << std::endl;
-        return;
-    }
-
-    // Чтение заголовка BMP
     file.read(reinterpret_cast<char*>(&bmpHeader), sizeof(bmpHeader));
-
-    if (bmpHeader.bfType != 0x4D42) { // 'BM' в шестнадцатеричной системе
-        std::cerr << "Not a BMP file" << std::endl;
-        return;
-    }
-
-    // Чтение информационного заголовка
     file.read(reinterpret_cast<char*>(&bmpInfoHeader), sizeof(bmpInfoHeader));
-
-    // Перемещение указателя на позицию данных пикселей
     file.seekg(bmpHeader.bfOffBits);
-
-    // Вычисление размера изображения
     size_t imageSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * (bmpInfoHeader.biBitCount / 8);
     pixels.resize(imageSize);
-
-    // Чтение данных пикселей
-    file.read(reinterpret_cast<char*>(pixels.data()), imageSize);
-    
+    file.read(reinterpret_cast<char*>(pixels.data()), imageSize); 
     file.close();
 }
-
 void writeBMP(const std::string& filePath, const BMPHeader& bmpHeader, const BMPInfoHeader& bmpInfoHeader, const std::vector<uint8_t>& pixels) {
     std::ofstream file(filePath, std::ios::binary);
-    if (!file) {
-        std::cerr << "Error creating file: " << filePath << std::endl;
-        return;
-    }
-
-    // Запись заголовка и информационного заголовка
     file.write(reinterpret_cast<const char*>(&bmpHeader), sizeof(bmpHeader));
     file.write(reinterpret_cast<const char*>(&bmpInfoHeader), sizeof(bmpInfoHeader));
-    
-    // Запись данных пикселей
     file.write(reinterpret_cast<const char*>(pixels.data()), pixels.size());
-
     file.close();
 }
-
+void rotateRight(const std::vector<uint8_t>& originalPixels, int width, int height, std::vector<uint8_t>& rotatedPixels) {
+    int newWidth = height;
+    int newHeight = width;
+    rotatedPixels.resize(newWidth * newHeight * 3); // RGB
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            rotatedPixels[((newHeight - j - 1) * newWidth + i) * 3 + 0]= originalPixels[(i * width + j) * 3 + 0]; // R
+            rotatedPixels[((newHeight - j - 1) * newWidth + i) * 3 + 1]= originalPixels[(i * width + j) * 3 + 1]; // G
+            rotatedPixels[((newHeight - j - 1) * newWidth + i) * 3 + 2]= originalPixels[(i * width + j) * 3 + 2]; // B
+        }
+    }
+}
+void rotateLeft(const std::vector<uint8_t>& originalPixels, int width, int height, std::vector<uint8_t>& rotatedPixels) {
+    int newWidth = height;
+    int newHeight = width;
+    rotatedPixels.resize(newWidth * newHeight * 3); // RGB
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            rotatedPixels[(j * newWidth + (newWidth - i - 1)) * 3 + 0] = originalPixels[(i * width + j) * 3 + 0]; // R
+            rotatedPixels[(j * newWidth + (newWidth - i - 1)) * 3 + 1] = originalPixels[(i * width + j) * 3 + 1]; // G
+            rotatedPixels[(j * newWidth + (newWidth - i - 1)) * 3 + 2] = originalPixels[(i * width + j) * 3 + 2]; // B
+        }
+    }
+}
 int main() {
-    std::string inputFilePath = "/home/anastasya/Документы/LabWork/LabWork1/Airplane.bmp"; // Укажите путь к вашему BMP файлу
-    std::string outputFilePath = "/home/anastasya/Документы/LabWork/LabWork1/test1.bmp"; // Путь для создания нового BMP файла
+    std::string inputFilePath = "/home/anastasya/Документы/LabWork/LabWork1/Airplane.bmp"; 
+    std::string outputFilePathRight = "/home/anastasya/Документы/LabWork/LabWork1/rotated_right.bmp"; 
+    std::string outputFilePathLeft = "/home/anastasya/Документы/LabWork/LabWork1/rotated_left.bmp"; 
 
     BMPHeader bmpHeader;
     BMPInfoHeader bmpInfoHeader;
+    
     std::vector<uint8_t> pixels;
-
-    // Чтение BMP файла
     readBMP(inputFilePath, bmpHeader, bmpInfoHeader, pixels);
-
-    // Создание нового BMP файла
-    writeBMP(outputFilePath, bmpHeader, bmpInfoHeader, pixels);
-
-    std::cout << "Created BMP file: " << outputFilePath << std::endl;
-
+    
+    std::vector<uint8_t> rotatedPixelsRight;
+    rotateRight(pixels, bmpInfoHeader.biWidth, bmpInfoHeader.biHeight, rotatedPixelsRight);
+    
+    bmpInfoHeader.biWidth = bmpInfoHeader.biHeight;
+    bmpInfoHeader.biHeight = bmpInfoHeader.biWidth;
+    
+    writeBMP(outputFilePathRight, bmpHeader, bmpInfoHeader, rotatedPixelsRight);
+    
+    std::vector<uint8_t> rotatedPixelsLeft;
+    rotateLeft(pixels, bmpInfoHeader.biWidth, bmpInfoHeader.biHeight, rotatedPixelsLeft);
+    
+    bmpInfoHeader.biWidth = bmpInfoHeader.biHeight;
+    bmpInfoHeader.biHeight = bmpInfoHeader.biWidth;
+    
+    writeBMP(outputFilePathLeft, bmpHeader, bmpInfoHeader, rotatedPixelsLeft);
+    
+    std::cout << "Created rotated BMP files: " << outputFilePathRight << " and " << outputFilePathLeft << std::endl;
+    
     return 0;
 }
+
