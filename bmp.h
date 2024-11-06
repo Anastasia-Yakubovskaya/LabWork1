@@ -1,3 +1,4 @@
+/*Yakubovskaya Anastasya st130155@student.spbu.ru LabWork1*/
 #ifndef BMP_H 
 #define BMP_H 
 #include <string> 
