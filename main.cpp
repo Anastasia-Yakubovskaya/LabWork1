@@ -8,15 +8,12 @@ int main()
 {
     BMPImage image;
 
-    if (!image.read("Airplane.bmp"))
-    {
-        std::cerr << "Ошибка чтения файла!" << std::endl;
-        return EXIT_FAILURE;
-    }
-
-
+    image.read("Airplane.bmp");
+ 
+    
     image.rotateLeft();
     image.write("rotated_left.bmp");
+    
 
 
     image.rotateRight();
@@ -26,12 +23,12 @@ int main()
 
     BMPImage leftImage;
     leftImage.read("rotated_left.bmp");
-    leftImage.applyGaussianFilter();
+    leftImage.applyGaussianFilter(5);
     leftImage.write("filtered_rotated_left.bmp");
 
     BMPImage rightSecondImage;
     rightSecondImage.read("rotated_right_second.bmp");
-    rightSecondImage.applyGaussianFilter();
+    rightSecondImage.applyGaussianFilter(5);
     rightSecondImage.write("filtered_rotated_right_second.bmp");
 
     return EXIT_SUCCESS;
