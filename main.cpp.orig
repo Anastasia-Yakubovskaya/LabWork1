@@ -9,11 +9,11 @@ int main()
     BMPImage image;
 
     image.read("Airplane1.bmp");
-
-
+ 
+    
     image.rotateLeft();
     image.write("rotated_left.bmp");
-
+    
 
 
     image.rotateRight();
