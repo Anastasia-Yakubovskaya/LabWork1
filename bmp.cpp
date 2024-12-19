@@ -31,12 +31,6 @@ bool BMPImage::read(const std::string& filename)
         return false; 
     } 
  
-    if (bmpInfoHeader.biCompression != 0) 
-    { 
-        std::cerr << filename << " is compressed. " 
-                  << "Only uncompressed images are supported." << std::endl; 
-        return false; 
-    } 
  
     size_t imageSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * (bmpInfoHeader.biBitCount / 8); 
     pixels.resize(imageSize); 
