@@ -1,3 +1,4 @@
+/*Yakubovskaya Anastasya st130155@student.spbu.ru LabWork1*/
 #include "bmp.h" 
 #include <iostream> 
 #include <fstream> 
@@ -5,7 +6,8 @@
 #include <algorithm> 
 #include <cstdint> 
 #include <cmath> 
- 
+#include <omp.h>
+
 bool BMPImage::read(const std::string& filename) 
 { 
     std::ifstream file(filename.c_str(), std::ios::binary); 
@@ -30,7 +32,6 @@ bool BMPImage::read(const std::string& filename)
                   << " bits per pixel (only 24 or 32 bit is supported)." << std::endl; 
         return false; 
     } 
- 
  
     size_t imageSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * (bmpInfoHeader.biBitCount / 8); 
     pixels.resize(imageSize); 
@@ -98,6 +99,7 @@ void BMPImage::rotateRight()
  
     std::vector<uint8_t> rotatedPixels(originalHeight * originalWidth * bytesPerPixel); 
  
+    #pragma omp parallel for
     for (int y = 0; y < originalHeight; ++y) 
     { 
         for (int x = 0; x < originalWidth; ++x) 
@@ -124,6 +126,7 @@ void BMPImage::rotateLeft()
  
     std::vector<uint8_t> rotatedPixels(originalHeight * originalWidth * bytesPerPixel); 
  
+    #pragma omp parallel for
     for (int y = 0; y < originalHeight; ++y) 
     { 
         for (int x = 0; x < originalWidth; ++x) 
@@ -186,6 +189,7 @@ void BMPImage::applyGaussianFilter(int kernelSize)
  
     std::vector<uint8_t> filteredPixels(pixels.size()); 
  
+    #pragma omp parallel for
     for (int y = kernelSize / 2; y < height - kernelSize / 2; ++y) 
     { 
         for (int x = kernelSize / 2; x < width - kernelSize / 2; ++x) 

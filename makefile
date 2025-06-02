@@ -1,23 +1,29 @@
-TARGET = BMPProcessing 
+TARGET = BMPProcessing
 
-CXX = g++ 
+CXX = g++
 
-CXXFLAGS = -I. -std=c++17 -g -fPIC -Wall -Werror -Wpedantic -O2 
+CXXFLAGS = -I./include -std=c++17 -Wall -Wextra -Wpedantic -O3 -march=native -fopenmp
+LDFLAGS = -fopenmp
 
-SRCS = main.cpp bmp.cpp 
+SRC_DIR = src
+INC_DIR = include
+BUILD_DIR = build
 
-OBJS = $(SRCS:.cpp=.o) 
+SRCS = $(wildcard $(SRC_DIR)/*.cpp)
+OBJS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
 
-all: $(TARGET) 
+all: $(BUILD_DIR) $(TARGET)
 
-$(TARGET): $(OBJS) 
-	$(CXX) $(CXXFLAGS) -o $@ $^ 
-	
-%.o: %.cpp bmp.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@ 
-	
-clean: 
-	rm -f $(OBJS) $(TARGET) 
-	
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+$(TARGET): $(OBJS)
+	$(CXX) $(LDFLAGS) -o $@ $^
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC_DIR)/bmp.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -rf $(BUILD_DIR) $(TARGET)
+
 .PHONY: all clean
-
