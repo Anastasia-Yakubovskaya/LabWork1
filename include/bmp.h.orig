@@ -10,7 +10,8 @@
 #pragma pack(push, 1)
 
 
-struct BMPHeader {
+struct BMPHeader
+{
     uint16_t bfType;
     uint32_t bfSize;
     uint16_t bfReserved1;
@@ -19,7 +20,8 @@ struct BMPHeader {
 };
 
 
-struct BMPInfoHeader {
+struct BMPInfoHeader
+{
     uint32_t biSize;
     int32_t biWidth;
     int32_t biHeight;
@@ -36,8 +38,9 @@ struct BMPInfoHeader {
 #pragma pack(pop)
 
 
-class BMPImage {
-  public:
+class BMPImage
+{
+public:
     BMPHeader bmpHeader;
     BMPInfoHeader bmpInfoHeader;
     std::vector<uint8_t> pixels;
