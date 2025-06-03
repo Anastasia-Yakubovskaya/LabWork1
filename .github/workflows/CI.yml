@@ -13,7 +13,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -21,20 +21,7 @@ jobs:
       - name: Set up GCC
         run: sudo apt-get install -y g++
 
-      - name: Install Doxygen and Graphviz
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y doxygen graphviz
-
-      - name: Generate Documentation with Doxygen
-        run: |
-          doxygen Doxyfile
-
       - name: Build with Makefile
         run: make
 
-      - name: Upload Documentation
-        uses: actions/upload-artifact@v3
-        with:
-          name: documentation
-          path: ./docs
+
