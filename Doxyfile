@@ -1,0 +1,28 @@
+# Doxyfile 1.9.4
+
+PROJECT_NAME           = "C++ CI"
+
+PROJECT_NUMBER         = 
+
+OUTPUT_DIRECTORY       = docs
+RECURSIVE              = YES
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+
+HAVE_DOT               = YES
+DOT_PATH               = /usr/bin/dot
+DOT_GRAPH_MAX_NODES    = 50
+MAX_DOT_GRAPH_WIDTH    = 1024
+
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+
+GENERATE_TREEVIEW      = YES
+
+INPUT                  = ./src ./include  # укажите путь к вашим исходным файлам и заголовкам
+FILE_PATTERNS          = *.cpp *.h *.hpp
+
+
+
