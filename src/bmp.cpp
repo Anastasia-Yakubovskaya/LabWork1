@@ -81,6 +81,7 @@ bool BMPImage::write(const std::string &filename) const {
     return true;
 }
 
+
 void BMPImage::rotateRight() {
     int originalWidth = bmpInfoHeader.biWidth;
     int originalHeight = bmpInfoHeader.biHeight;

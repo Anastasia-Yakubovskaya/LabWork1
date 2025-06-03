@@ -8,10 +8,12 @@ LDFLAGS = -fopenmp
 SRC_DIR = src
 INC_DIR = include
 BUILD_DIR = build
+DOCS_DIR = docs
 
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
 OBJS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
 
+# Основная сборка
 all: $(BUILD_DIR) $(TARGET)
 
 $(BUILD_DIR):
@@ -24,6 +26,9 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC_DIR)/bmp.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(BUILD_DIR) $(TARGET)
+	rm -rf $(BUILD_DIR) $(TARGET) $(DOCS_DIR)
 
-.PHONY: all clean
+docs:
+	doxygen Doxyfile
+
+.PHONY: all clean docs
